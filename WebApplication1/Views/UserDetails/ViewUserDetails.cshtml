@@ -1,0 +1,73 @@
+﻿
+@{
+    ViewBag.Title = "ViewUserDetails";
+}
+
+<h2>View User Details</h2>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<div class="row">
+
+    <table class="table table-bordered table-responsive table-striped" id="tblUserDetails">
+        <thead>
+            <tr>
+                <th>Edit</th>
+                <th>Delete</th>
+                <th>Id</th>
+                <th>First Name</th>
+                <th>Surname</th>
+                <th>Age</th>
+                <th>Sex</th>
+                <th>Mobile</th>
+                <th>Active</th>
+            </tr>
+        </thead>
+    </table>
+
+</div>
+<script>
+    $(document).ready(function () {
+        bindTableData();
+    });
+    function bindTableData() {
+        
+        $.ajax({
+            url: '/UserDetails/GetAllUserDetails',
+            type: 'GET',
+            data: {}, // Pass the query parameter
+            dataType: 'json',
+            success: function (response) {
+
+                if (response != "") { 
+                $('#tblUserDetails tr').remove();
+                response.forEach(function (obj) {
+                    var row = '<tr><td>' + '<a href="/UserDetails/Edit?Id=' + obj.Id + '">' + obj.Id + '</a>' + '</td><td><a href="#" onclick="deleteRow(' + obj.Id + ');">Delete</a></td><td>' + obj.Id + '</td><td>' + obj.FirstName + '</td><td>' + obj.Surname + '</td><td>' + obj.Age + '</td><td>' + obj.Sex + '</td><td>' + obj.Mobile + '</td><td>' + obj.Active + '</td></tr>';
+                    $('#tblUserDetails').append(row);
+                })
+            }
+            },
+            error: function (xhr, status, error) {
+                alert(error);
+            }
+        });
+    }
+    function deleteRow(Id) {
+        $.ajax({
+            url: '/UserDetails/Delete/'+Id,
+            type: 'DELETE',
+            //data: {}, // Pass the query parameter
+            //dataType: 'json',
+            success: function (response) {
+               
+                console.log(response);
+                bindTableData();
+            },
+            error: function (xhr, status, error) {
+                console.log(error);
+                console.log(xhr);
+                console.log(status);
+                alert(error);
+            }
+        });
+    }
+</script>

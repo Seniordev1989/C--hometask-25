@@ -1,0 +1,163 @@
+﻿
+@{
+    ViewBag.Title = "ViewUserDetails";
+}
+
+<h2>View User Details</h2>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<div class="row">
+    <div>
+        <div>
+              <label class="col-md-2">Id</label>
+              <div class="col-md-10">
+              <input class="form-control" id="Id" value="@ViewBag.Id" disabled/>
+              </div>              
+            </div>         
+        <div>
+            <label class="col-md-2">First Name</label>
+            <div class="col-md-10">
+                <input class="form-control" id="FirstName" />
+            </div>
+            </div>
+        <div>
+            <label class="col-md-2">Surname</label>
+            <div class="col-md-10">
+                <input class="form-control" id="Surname" />
+            </div>
+        </div>
+        <div>
+            <label class="col-md-2">Age</label>
+            <div class="col-md-10">
+                <input class="form-control" id="Age" />
+            </div>
+        </div>
+        <div>
+            <label class="col-md-2">Sex</label>
+            <div class="col-md-10">
+                <select class="form-control" id="Sex">
+                    <option value="M">M</option>
+                    <option value="F">F</option>
+                </select>
+            </div>
+        </div>
+        <div>
+            <label class="col-md-2">Mobile</label>
+            <div class="col-md-10">
+                <input class="form-control" id="Mobile" />
+            </div>
+        </div>
+        <div>
+            <label class="col-md-2">Active</label>
+            <div class="col-md-10">
+                <select class="form-control" id="Active">
+                    <option value="true">TRUE</option>
+                    <option value="false">FALSE</option>
+                </select>
+            </div>
+        </div>
+        <div style="margin-top:20px;">
+            <button class="btn btn-primary col-md-1" onclick="update();">Update</button>
+            <button class="btn btn-primary col-md-1" onclick="cancel();">Cancel</button>
+        </div>
+        </div>
+
+</div>
+<script>
+    $(document).ready(function () {
+        fetchData();
+    });
+    function fetchData() {
+        var Id = $('#Id').val();
+        $.ajax({
+            url: '/UserDetails/GetById?Id='+Id,
+            type: 'GET',
+            data: {}, // Pass the query parameter
+            dataType: 'json',
+            success: function (obj) {
+                console.log(obj);
+
+                $('#FirstName').val(obj.FirstName);
+                $('#Surname').val(obj.Surname);
+                $('#Age').val(obj.Age);
+                $('#Sex').val(obj.Sex);
+                $('#Mobile').val(obj.Mobile);
+                if (obj.Active == true) {
+                    $('#Active').val('true');
+                }
+                else {
+                    $('#Active').val('false');
+                }
+
+
+            },
+            error: function (xhr, status, error) {
+                alert(error);
+            }
+        });
+    }
+
+    function update() {
+
+        var Id = $('#Id').val();
+        var FirstName= $('#FirstName').val();
+        var Surname=$('#Surname').val();
+        var Age= $('#Age').val();
+        var Sex= $('#Sex').val();
+        var Mobile=$('#Mobile').val();
+        var Activedata = $('#Active').val();
+        var Active = false;
+        if (Activedata == "true") {
+            Active = true;
+        }
+        var record = {
+            Id: Id,
+            FirstName: FirstName,
+            Surname: Surname,
+            Age: Age != "" ? parseInt(Age) : 0,
+            Sex: Sex,
+            Mobile: Mobile,
+            Active: Active
+        };
+        var status = validation(record);
+        console.log(record);
+        if (status) {
+            
+      
+
+        $.ajax({
+            url: '/UserDetails/Update',
+            type: 'PUT',
+            data: JSON.stringify(record), // Pass the query parameter
+            dataType: 'json',
+            contentType: 'application/json',
+            success: function (obj) {
+
+                if (obj == true) {
+                    alert('Record Updated successfully!');
+                }
+                else {
+                    alert('Record Updated unsuccessfully!');
+                }
+
+            },
+            error: function (xhr, status, error) {
+                alert(error);
+            }
+        });
+        }
+    }
+    function cancel() {
+        location.href = "\Index";
+    }
+
+    function validation(record) {
+
+        if (record.FirstName == "" || record.Surname == "" || record.Age ==0 || record.Sex =="" || record.Mobile =="" ) {
+            alert("Please enter all fields");
+            return false;
+        }
+        return true;
+    }
+
+</script>
